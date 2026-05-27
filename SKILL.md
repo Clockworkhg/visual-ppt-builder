@@ -1,6 +1,6 @@
 ---
 name: visual-ppt-builder
-description: Create visually polished, editable PowerPoint PPTX decks from a topic, brief, product image, reference style, copy, or rough outline. Use when the user asks to make a PPT, slide deck, presentation, product showcase, proposal deck, course deck, activity plan, image-led deck, high-visual editable PPTX, or when Codex should generate slide backgrounds/assets, assemble them into a PPTX with editable text layers, and validate the output.
+description: Create visually polished, editable PowerPoint PPTX decks from a topic, brief, product image, reference style, copy, or rough outline. Use when the user asks to make a PPT, slide deck, presentation, product showcase, proposal deck, course deck, activity plan, image-led deck, high-visual editable PPTX, or when Codex should ask for visual/style choices, design AI image prompts, generate slide backgrounds/assets, assemble them into a PPTX with editable text layers, and validate the output.
 ---
 
 # Visual PPT Builder
@@ -24,6 +24,9 @@ pages.
   creating or repairing `slide_plan.json`.
 - Read [references/image-prompting.md](references/image-prompting.md) before
   generating slide visuals.
+- Read [references/visual-prompt-strategy.md](references/visual-prompt-strategy.md)
+  when the user gives only a short prompt, style is subjective, or generated
+  images need a stronger art direction before calling the image model.
 - Read [references/asset-reconstruction.md](references/asset-reconstruction.md)
   when using the visual-draft -> asset extraction -> PPT reconstruction flow.
 - Read [references/decision-gates.md](references/decision-gates.md) when the
@@ -54,33 +57,38 @@ visual-planning, image-generation, editability, and validation rules.
    a custom-answer path.
 4. Create `slide_plan.json` before generating visuals or slides. Include deck
    metadata, a visual system, and one object per slide.
-5. Lock a visual system: palette, font direction, layout rhythm, background
-   treatment, image style, and whitespace rules. Reuse this in every image
-   prompt and slide layout.
-6. In `reconstruct_editable` mode, generate full-page visual drafts first.
+5. Before calling the image model, create a visual prompt strategy. If the
+   user's request is short or vague, ask 1-3 style/scope questions first, then
+   turn the answers into a concrete art direction, visual system, negative
+   constraints, and per-slide prompt plan. Do not feed a one-line user request
+   directly to image generation.
+6. Lock the visual system from the prompt strategy: palette, font direction,
+   layout rhythm, background treatment, image style, whitespace rules, and
+   recurring motifs. Reuse it in every image prompt and slide layout.
+7. In `reconstruct_editable` mode, generate full-page visual drafts first.
    Generate one separate image per slide, not a contact sheet or collage. Save
    them as `drafts/slide_01.png`, `drafts/slide_02.png`, and so on. These are
    references only, not final slide backgrounds.
-7. Validate visual draft dimensions before extraction. Each draft must be 16:9
+8. Validate visual draft dimensions before extraction. Each draft must be 16:9
    within a small tolerance. If drafts came from a generated contact sheet,
    reject them and regenerate individual slide drafts.
-8. Before extraction, ask the user whether the visual drafts are acceptable when
+9. Before extraction, ask the user whether the visual drafts are acceptable when
    visual fidelity matters. If the user rejects the direction, revise drafts
    before splitting assets.
-9. Extract or regenerate the useful visual pieces as separate transparent PNGs:
+10. Extract or regenerate the useful visual pieces as separate transparent PNGs:
    product cutouts, decorative leaves, platforms, icon-like assets, soft
    shadows, and reusable image fragments. Skip plain rectangles, circles,
    cards, dividers, and lines because those should be rebuilt as native PPT
    shapes.
-10. Add every reusable image asset to the top-level `assets` list. Add every
+11. Add every reusable image asset to the top-level `assets` list. Add every
    per-slide placement to `slides[].image_assets`. Add circles, cards, chips,
    color blocks, dividers, and panels to `slides[].native_shapes`.
-11. Assemble the PPTX. Insert native shapes first, then independent image assets,
+12. Assemble the PPTX. Insert native shapes first, then independent image assets,
    then editable text boxes. Keep all title, body, label, table, and parameter
    text editable.
-12. Validate the deck. Prefer rendered preview QA when available. Always inspect
+13. Validate the deck. Prefer rendered preview QA when available. Always inspect
    the PPTX package for slide count and text objects.
-13. Deliver the final PPTX plus useful support artifacts.
+14. Deliver the final PPTX plus useful support artifacts.
 
 ## Mode Router
 
@@ -122,6 +130,12 @@ context, thesis, sections/proof, application, summary.
 - Do not use a generated multi-slide contact sheet as the source for per-slide
   drafts. Contact sheets are for review only after individual 16:9 slide drafts
   exist. Slicing a generated contact sheet usually produces wrong page ratios.
+- Do not send a short, vague user request straight to the image model. First
+  ask for missing high-impact style choices or choose explicit defaults, then
+  write a visual prompt strategy and per-slide prompts.
+- Do not rely on generic image prompts such as "clean modern corporate PPT".
+  Prompts must include a specific visual direction, composition system,
+  whitespace plan, material/lighting language, and anti-pattern constraints.
 - Do not make each editable slide a single flattened screenshot or one
   screenshot plus text if the user asked for material object editing.
 - Product images and decorative assets should be separate movable PPT image
@@ -151,6 +165,8 @@ Create a task output folder, for example:
 outputs/<task-slug>/
   final_deck.pptx
   slide_plan.json
+  visual_prompt_strategy.md
+  image_prompts.json
   asset_manifest.json
   build_report.md
   drafts/
@@ -194,6 +210,10 @@ python scripts/validate_drafts.py outputs/demo/drafts --expect-count 6 --report 
   useful visuals into independent PNGs, and rebuild shapes natively.
 - If visuals are busy, regenerate backgrounds with larger blank text zones,
   fewer objects, and simpler depth.
+- If visuals are too plain, generic, or template-like, do not keep iterating on
+  the same weak prompt. Rewrite the visual prompt strategy with a sharper art
+  direction, concrete references to the source image, richer composition
+  language, and stronger negative constraints, then regenerate drafts.
 - If the reconstructed PPT looks messier than the visual draft, reduce the
   number of extracted decorative assets, rebuild plain geometry as native
   shapes, and prioritize thumbnail-level similarity over asset count.

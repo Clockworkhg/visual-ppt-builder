@@ -30,6 +30,8 @@ agent can repair it by hand.
     "whitespace": "Reserve at least 40 percent low-detail area for editable text",
     "avoid": ["busy backgrounds", "long embedded text", "fake logos"]
   },
+  "visual_prompt_strategy": "visual_prompt_strategy.md",
+  "image_prompts": "image_prompts.json",
   "assets": [
     {
       "id": "product_bottle",
@@ -123,6 +125,18 @@ In `reconstruct_editable` mode, also include at least one of:
 
 - `slides[].native_shapes`
 - `slides[].image_assets`
+
+## Visual Prompt Strategy Links
+
+When image generation is part of the workflow, store the deck-level prompt
+strategy and final per-slide prompts beside the slide plan:
+
+- `visual_prompt_strategy`: path to the art-direction and prompt-plan document
+- `image_prompts`: path to the exact prompts used for generated draft images
+
+Each slide should also keep its final prompt in `slides[].image_prompt` so a
+single slide can be regenerated or repaired without reconstructing the whole
+deck context.
 
 ## Slide Types
 

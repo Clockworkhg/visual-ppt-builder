@@ -4,6 +4,25 @@ Generate slide visuals as draft references or support assets, not as final flat
 slides unless the user explicitly chooses `visual_only`. The PPT layer should
 own the text and simple geometry.
 
+## Strategy Before Generation
+
+Do not send a short user request directly to the image model. When the brief is
+short, subjective, or visually important, first create a visual prompt strategy
+as described in [visual-prompt-strategy.md](visual-prompt-strategy.md). Use the
+strategy to define the deck-level art direction and then derive per-slide
+prompts from it.
+
+The image prompts should feel like they were written by an art director, not
+like a generic PPT template request. Each prompt must carry:
+
+- the same deck-level style anchor
+- a slide-specific composition
+- a clear blank zone for editable text
+- focal object placement and scale
+- lighting/material/texture instructions when relevant
+- negative constraints against contact sheets, fake text, logos, watermarks, and
+  clutter
+
 ## Prompt Formula
 
 Use this structure for each slide:
@@ -11,7 +30,8 @@ Use this structure for each slide:
 ```text
 Create one single 16:9 horizontal presentation slide visual draft for [slide type].
 Topic/product: [subject].
-Visual system: [palette, style, lighting, texture].
+Art direction: [specific creative direction name and style anchor].
+Visual system: [palette, style, lighting, texture, recurring motifs].
 Composition: [where the focal object goes, where the text zone stays blank].
 Content cues: [objects, environment, mood, use case].
 Constraints: not a collage, not a contact sheet, no long readable text, no fake
@@ -69,6 +89,9 @@ When the user provides a reference style:
 
 Avoid:
 
+- "Make a good PPT image."
+- "Create a beautiful modern business slide."
+- "Clean professional corporate PowerPoint."
 - "Create a complete slide with all text..."
 - "Add the title and bullet points..."
 - "Make a detailed infographic with many labels..."

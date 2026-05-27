@@ -1,4 +1,4 @@
 interface:
   display_name: "Visual PPT Builder"
-  short_description: "Build editable visual PPTX decks from a brief."
-  default_prompt: "Use $visual-ppt-builder to create a visually polished, editable PowerPoint deck from my topic, images, or reference style."
+  short_description: "Plan image prompts and build editable visual PPTX decks."
+  default_prompt: "Use $visual-ppt-builder to ask for key style choices if needed, design strong AI image prompts, and create a visually polished, editable PowerPoint deck from my topic, images, or reference style."

@@ -22,6 +22,28 @@ Before I generate the visual drafts, please choose:
 
 If the user already gave a clear answer, do not ask again.
 
+## Short Prompt Gate
+
+When the user gives a short or vague request such as "make a PPT", "make it
+look good", "try this product photo", or "do a 6-page deck", ask for the
+highest-impact visual choices before generating images. The goal is to collect
+enough information to write a strong visual prompt strategy, not to interrogate
+the user.
+
+Ask a compact set such as:
+
+```text
+Before I generate visual drafts, choose:
+
+1. Style: premium minimal (recommended), richer commercial, or bold keynote.
+2. Audience: client/executive (recommended), internal team, or public/social.
+3. Fidelity: high visual polish with draft approval (recommended), faster first
+   pass, or visual-only.
+```
+
+If the uploaded image already strongly suggests a style, make that the
+recommended option and explain it in a few words.
+
 ## Must Ask
 
 Ask before proceeding when any of these are unclear:
@@ -33,6 +55,8 @@ Ask before proceeding when any of these are unclear:
   quick draft
 - `mode`: if they may care about object-level editing versus speed
 - `visual_direction`: if multiple plausible styles fit the source image
+- `prompt_strategy`: if the user's request is too short to produce strong image
+  prompts without choosing style, density, tone, or audience
 - `source_facts`: if names, titles, metrics, prices, claims, or product specs
   are missing
 - `asset_fidelity`: if using a provided product/person image and generated
@@ -62,6 +86,8 @@ Use these defaults when the user wants speed or says "you decide":
 - `ratio`: 16:9
 - `language`: match the user's prompt language
 - `visual_direction`: derive from source image or reference style
+- `prompt_strategy`: create one before image generation whenever the brief is
+  short or visual quality is important
 - `draft_generation`: one separate 16:9 image per slide
 - `asset_batch_size`: 1 global batch, 1 PNG batch, then slide-specific batches
 - `final_review`: show or report draft validation before PPT assembly
@@ -71,11 +97,13 @@ Use these defaults when the user wants speed or says "you decide":
 Use these checkpoints for high-fidelity visual decks:
 
 1. Brief approval: confirm topic, audience, page count, mode, and style.
-2. Visual draft approval: show or describe the 16:9 drafts and ask whether to
+2. Prompt strategy approval: for high-visual decks, summarize the planned art
+   direction and ask whether to proceed, revise, or use a different style.
+3. Visual draft approval: show or describe the 16:9 drafts and ask whether to
    proceed, revise, or choose a different style.
-3. Asset batch approval: after a batch, ask whether to continue, revise the
+4. Asset batch approval: after a batch, ask whether to continue, revise the
    extraction granularity, or stop if enough assets exist.
-4. Final QA: report editability, draft ratio validation, and PPTX validation.
+5. Final QA: report editability, draft ratio validation, and PPTX validation.
 
 ## Example Questions
 
@@ -97,6 +125,16 @@ Before generating drafts, should the deck feel:
 1. Corporate profile blue/white (recommended, matches the photo).
 2. Portfolio/editorial with more personality.
 3. Tech/startup with stronger motion and diagrams.
+```
+
+For a very short prompt:
+
+```text
+I can design the image prompts first so the generated PPT visuals are less
+generic. Choose the direction:
+1. Premium and restrained (recommended): clean, polished, easy to edit.
+2. Rich commercial: more product-ad styling and decorative assets.
+3. Bold keynote: stronger contrast, bigger visual moments.
 ```
 
 For asset extraction:
