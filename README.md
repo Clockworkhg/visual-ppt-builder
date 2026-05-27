@@ -1,5 +1,7 @@
 # Visual PPT Builder
 
+[中文版](README.zh-CN.md)
+
 Visual PPT Builder is a Codex skill for creating visually polished, editable
 PowerPoint decks from a short brief, product image, profile photo, reference
 style, outline, or copy.

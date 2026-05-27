@@ -14,6 +14,9 @@ This index maps the skill's Markdown files and when to read each one.
   Human-facing overview, use cases, workflow, output structure, install notes,
   and validation commands.
 
+- [README.zh-CN.md](README.zh-CN.md)  
+  Chinese version of the human-facing README.
+
 - [RULES.md](RULES.md)  
   Stable operational rules for generation, editability, draft ratios, asset
   reconstruction, user questions, and failure recovery.
