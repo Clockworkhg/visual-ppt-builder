@@ -26,6 +26,9 @@ pages.
   generating slide visuals.
 - Read [references/asset-reconstruction.md](references/asset-reconstruction.md)
   when using the visual-draft -> asset extraction -> PPT reconstruction flow.
+- Read [references/decision-gates.md](references/decision-gates.md) when the
+  request has meaningful creative, scope, fidelity, or workflow choices that
+  should be confirmed with the user.
 - Use [scripts/build_ppt.py](scripts/build_ppt.py) when a lightweight local
   PPTX builder is enough and `python-pptx` is available.
 - Use [scripts/validate_drafts.py](scripts/validate_drafts.py) before asset
@@ -45,32 +48,39 @@ visual-planning, image-generation, editability, and validation rules.
 2. Build a brief from the user request. Infer missing non-critical details.
    Ask only when purpose, language, page count, source facts, or required assets
    are impossible to infer safely.
-3. Create `slide_plan.json` before generating visuals or slides. Include deck
+3. Run the decision gates. Ask the user before choices that materially affect
+   style, scope, editability, source accuracy, cost/time, or whether to proceed
+   after visual drafts. Offer 2-3 clear options with a recommended default plus
+   a custom-answer path.
+4. Create `slide_plan.json` before generating visuals or slides. Include deck
    metadata, a visual system, and one object per slide.
-4. Lock a visual system: palette, font direction, layout rhythm, background
+5. Lock a visual system: palette, font direction, layout rhythm, background
    treatment, image style, and whitespace rules. Reuse this in every image
    prompt and slide layout.
-5. In `reconstruct_editable` mode, generate full-page visual drafts first.
+6. In `reconstruct_editable` mode, generate full-page visual drafts first.
    Generate one separate image per slide, not a contact sheet or collage. Save
    them as `drafts/slide_01.png`, `drafts/slide_02.png`, and so on. These are
    references only, not final slide backgrounds.
-6. Validate visual draft dimensions before extraction. Each draft must be 16:9
+7. Validate visual draft dimensions before extraction. Each draft must be 16:9
    within a small tolerance. If drafts came from a generated contact sheet,
    reject them and regenerate individual slide drafts.
-7. Extract or regenerate the useful visual pieces as separate transparent PNGs:
+8. Before extraction, ask the user whether the visual drafts are acceptable when
+   visual fidelity matters. If the user rejects the direction, revise drafts
+   before splitting assets.
+9. Extract or regenerate the useful visual pieces as separate transparent PNGs:
    product cutouts, decorative leaves, platforms, icon-like assets, soft
    shadows, and reusable image fragments. Skip plain rectangles, circles,
    cards, dividers, and lines because those should be rebuilt as native PPT
    shapes.
-8. Add every reusable image asset to the top-level `assets` list. Add every
+10. Add every reusable image asset to the top-level `assets` list. Add every
    per-slide placement to `slides[].image_assets`. Add circles, cards, chips,
    color blocks, dividers, and panels to `slides[].native_shapes`.
-9. Assemble the PPTX. Insert native shapes first, then independent image assets,
+11. Assemble the PPTX. Insert native shapes first, then independent image assets,
    then editable text boxes. Keep all title, body, label, table, and parameter
    text editable.
-10. Validate the deck. Prefer rendered preview QA when available. Always inspect
+12. Validate the deck. Prefer rendered preview QA when available. Always inspect
    the PPTX package for slide count and text objects.
-11. Deliver the final PPTX plus useful support artifacts.
+13. Deliver the final PPTX plus useful support artifacts.
 
 ## Mode Router
 
@@ -129,6 +139,9 @@ context, thesis, sections/proof, application, summary.
   capabilities. Ask for missing facts or mark them as placeholders.
 - Do not create lookalike logos or brand marks. Use user-provided or verified
   assets, or omit the mark.
+- Do not over-ask. If a choice is low-risk and easy to revise, choose a
+  sensible default and continue. If a choice changes the story, style, page
+  count, fidelity, or factual accuracy, ask.
 
 ## Artifacts
 
