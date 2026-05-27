@@ -9,18 +9,21 @@ own the text and simple geometry.
 Use this structure for each slide:
 
 ```text
-Create a 16:9 horizontal presentation background for [slide type].
+Create one single 16:9 horizontal presentation slide visual draft for [slide type].
 Topic/product: [subject].
 Visual system: [palette, style, lighting, texture].
 Composition: [where the focal object goes, where the text zone stays blank].
 Content cues: [objects, environment, mood, use case].
-Constraints: no long readable text, no fake logos, no watermark, no busy details
-inside the reserved text area.
+Constraints: not a collage, not a contact sheet, no long readable text, no fake
+logos, no watermark, no busy details inside the reserved text area.
 ```
 
 ## Reconstruct Editable Mode Rules
 
-- First generate full-page visual drafts to establish the look.
+- First generate full-page visual drafts to establish the look. Generate one
+  separate 16:9 image per slide.
+- Do not ask for a 2x3 or 3x2 generated contact sheet as the source image.
+  Contact sheets are review artifacts assembled after individual drafts exist.
 - Then generate or extract independent transparent PNG assets for product
   cutouts, leaves, props, shadows, platforms, and complex motifs.
 - Rebuild simple circles, rounded rectangles, cards, chips, and dividers as

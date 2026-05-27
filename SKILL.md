@@ -28,6 +28,8 @@ pages.
   when using the visual-draft -> asset extraction -> PPT reconstruction flow.
 - Use [scripts/build_ppt.py](scripts/build_ppt.py) when a lightweight local
   PPTX builder is enough and `python-pptx` is available.
+- Use [scripts/validate_drafts.py](scripts/validate_drafts.py) before asset
+  extraction to verify every visual draft is an individual 16:9 slide image.
 - Use [scripts/validate_ppt.py](scripts/validate_ppt.py) to inspect the final
   PPTX package for slide count, text objects, and image objects.
 
@@ -49,22 +51,26 @@ visual-planning, image-generation, editability, and validation rules.
    treatment, image style, and whitespace rules. Reuse this in every image
    prompt and slide layout.
 5. In `reconstruct_editable` mode, generate full-page visual drafts first.
-   Save them as `drafts/slide_01.png`, `drafts/slide_02.png`, and so on. These
-   are references only, not final slide backgrounds.
-6. Extract or regenerate the useful visual pieces as separate transparent PNGs:
+   Generate one separate image per slide, not a contact sheet or collage. Save
+   them as `drafts/slide_01.png`, `drafts/slide_02.png`, and so on. These are
+   references only, not final slide backgrounds.
+6. Validate visual draft dimensions before extraction. Each draft must be 16:9
+   within a small tolerance. If drafts came from a generated contact sheet,
+   reject them and regenerate individual slide drafts.
+7. Extract or regenerate the useful visual pieces as separate transparent PNGs:
    product cutouts, decorative leaves, platforms, icon-like assets, soft
    shadows, and reusable image fragments. Skip plain rectangles, circles,
    cards, dividers, and lines because those should be rebuilt as native PPT
    shapes.
-7. Add every reusable image asset to the top-level `assets` list. Add every
+8. Add every reusable image asset to the top-level `assets` list. Add every
    per-slide placement to `slides[].image_assets`. Add circles, cards, chips,
    color blocks, dividers, and panels to `slides[].native_shapes`.
-8. Assemble the PPTX. Insert native shapes first, then independent image assets,
+9. Assemble the PPTX. Insert native shapes first, then independent image assets,
    then editable text boxes. Keep all title, body, label, table, and parameter
    text editable.
-9. Validate the deck. Prefer rendered preview QA when available. Always inspect
+10. Validate the deck. Prefer rendered preview QA when available. Always inspect
    the PPTX package for slide count and text objects.
-10. Deliver the final PPTX plus useful support artifacts.
+11. Deliver the final PPTX plus useful support artifacts.
 
 ## Mode Router
 
@@ -103,6 +109,9 @@ context, thesis, sections/proof, application, summary.
   exists before reconstruction and the final PPT is checked against it. If the
   assets were created only to test the pipeline, label the result as a
   pipeline/object-structure demo, not a visual-quality demo.
+- Do not use a generated multi-slide contact sheet as the source for per-slide
+  drafts. Contact sheets are for review only after individual 16:9 slide drafts
+  exist. Slicing a generated contact sheet usually produces wrong page ratios.
 - Do not make each editable slide a single flattened screenshot or one
   screenshot plus text if the user asked for material object editing.
 - Product images and decorative assets should be separate movable PPT image
@@ -155,10 +164,18 @@ Validate an existing PPTX:
 python scripts/validate_ppt.py outputs/demo/final_deck.pptx --expect-slides 6 --report outputs/demo/validation_report.md
 ```
 
+Validate visual drafts before extraction:
+
+```bash
+python scripts/validate_drafts.py outputs/demo/drafts --expect-count 6 --report outputs/demo/draft_validation_report.md
+```
+
 ## Failure Recovery
 
 - If the result is too image-heavy, rebuild with more native shapes and text
   boxes.
+- If generated visual drafts are the wrong ratio, stop before extraction and
+  regenerate one image per slide. Do not slice a contact sheet to recover pages.
 - If the result is only "background plus text" but the user expected the video
   workflow, switch to `reconstruct_editable`: create an asset manifest, split
   useful visuals into independent PNGs, and rebuild shapes natively.

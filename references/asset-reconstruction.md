@@ -12,6 +12,11 @@ Generate one 16:9 visual draft per slide. These drafts establish composition,
 palette, product placement, lighting, and slide rhythm. They are not final PPTX
 slides in `reconstruct_editable` mode.
 
+Never ask the image model for a multi-slide contact sheet as the canonical
+source. A generated contact sheet often has the correct overall 16:9 ratio while
+each thumbnail inside it is not 16:9. Slicing that sheet corrupts the geometry
+for extraction and reconstruction.
+
 Do not skip this stage for a visual-quality demo. If no real draft exists and
 the assets are hand-made or code-generated placeholders, call the output a
 pipeline/object-structure test only.
@@ -26,6 +31,10 @@ drafts/slide_01.png
 drafts/slide_02.png
 ...
 ```
+
+Then run `scripts/validate_drafts.py` and proceed only if every draft is 16:9.
+If a contact sheet is useful for review, assemble it yourself from the validated
+individual drafts.
 
 ## Stage 2: Asset Extraction
 
@@ -111,6 +120,8 @@ A reconstructed deck passes only when:
   stretched to fit a frame
 - simple circles/cards/blocks are native PPT shapes
 - no slide is merely one full-page screenshot
+- every source draft is an individual 16:9 slide image, not a slice from a
+  generated collage
 - the slide count and visual rhythm match the draft set
 - the deck still looks close to the visual drafts at thumbnail size
 - the reconstructed page is not busier than the draft
