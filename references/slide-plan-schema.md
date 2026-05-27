@@ -168,12 +168,22 @@ Use `line: "none"` for no outline. Transparency is 0-100.
   "asset_id": "leaf_sprig",
   "path": "assets/leaf_sprig.png",
   "box": {"x": 10.8, "y": 5.8, "w": 1.2, "h": 0.8},
+  "fit": "contain",
   "rotation": -8
 }
 ```
 
 Use `asset_id` when the asset exists in top-level `assets`; use `path` for
 one-off image placements.
+
+Image `fit` values:
+
+- `contain`: preserve aspect ratio and center the image inside the box. This is
+  the default and prevents distortion.
+- `cover`: preserve aspect ratio, fill the box, and crop evenly from the sides
+  or top/bottom. Use for portrait cards or circular avatars.
+- `stretch`: force the image to the exact box dimensions. Use only for abstract
+  textures or shadows where distortion is intentional.
 
 ## Editability Standard
 

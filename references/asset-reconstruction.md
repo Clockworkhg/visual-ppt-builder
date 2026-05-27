@@ -93,6 +93,13 @@ For each slide:
 Object order matters. Insert broad background shapes first, then decorative
 shapes, then images, then text.
 
+Set image fit deliberately:
+
+- `contain` for product cutouts, icons, and most transparent PNG assets
+- `cover` for portrait cards or circular avatars that must fill a frame without
+  distortion
+- `stretch` only for abstract shadows or textures where stretching is acceptable
+
 ## QA Checklist
 
 A reconstructed deck passes only when:
@@ -100,6 +107,8 @@ A reconstructed deck passes only when:
 - text is selectable and editable
 - product cutouts can be selected and moved
 - decorative PNGs can be selected independently
+- image assets preserve their intended aspect ratio; portraits must not be
+  stretched to fit a frame
 - simple circles/cards/blocks are native PPT shapes
 - no slide is merely one full-page screenshot
 - the slide count and visual rhythm match the draft set

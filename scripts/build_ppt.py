@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any
 
 try:
+    from PIL import Image
     from pptx import Presentation
     from pptx.dml.color import RGBColor
     from pptx.enum.shapes import MSO_CONNECTOR, MSO_SHAPE
@@ -23,8 +24,8 @@ try:
     from pptx.util import Inches, Pt
 except ImportError as exc:  # pragma: no cover - environment dependent
     raise SystemExit(
-        "python-pptx is required for build_ppt.py. "
-        "Install python-pptx or use the Presentations skill/plugin."
+        "python-pptx and Pillow are required for build_ppt.py. "
+        "Install them or use the Presentations skill/plugin."
     ) from exc
 
 
@@ -228,13 +229,65 @@ def add_image_asset(
         return
 
     box = spec.get("box") or {}
-    picture = slide.shapes.add_picture(
-        str(image_path),
-        Inches(float(box.get("x", 0))),
-        Inches(float(box.get("y", 0))),
-        width=Inches(float(box.get("w", 1))),
-        height=Inches(float(box.get("h", 1))),
-    )
+    fit = str(spec.get("fit", "contain")).lower()
+    if fit not in {"contain", "cover", "stretch"}:
+        warnings.append(
+            f"Slide {slide_pos}: unsupported image fit {fit!r}; using contain."
+        )
+        fit = "contain"
+
+    x = float(box.get("x", 0))
+    y = float(box.get("y", 0))
+    w = float(box.get("w", 1))
+    h = float(box.get("h", 1))
+
+    with Image.open(image_path) as image:
+        image_w, image_h = image.size
+    image_ratio = image_w / image_h
+    box_ratio = w / h if h else image_ratio
+
+    if fit == "stretch":
+        picture = slide.shapes.add_picture(
+            str(image_path),
+            Inches(x),
+            Inches(y),
+            width=Inches(w),
+            height=Inches(h),
+        )
+    elif fit == "cover":
+        picture = slide.shapes.add_picture(
+            str(image_path),
+            Inches(x),
+            Inches(y),
+            width=Inches(w),
+            height=Inches(h),
+        )
+        if image_ratio > box_ratio:
+            crop = max(0, min((1 - box_ratio / image_ratio) / 2, 0.499))
+            picture.crop_left = crop
+            picture.crop_right = crop
+        elif image_ratio < box_ratio:
+            crop = max(0, min((1 - image_ratio / box_ratio) / 2, 0.499))
+            picture.crop_top = crop
+            picture.crop_bottom = crop
+    else:
+        if image_ratio > box_ratio:
+            draw_w = w
+            draw_h = w / image_ratio
+            draw_x = x
+            draw_y = y + (h - draw_h) / 2
+        else:
+            draw_h = h
+            draw_w = h * image_ratio
+            draw_x = x + (w - draw_w) / 2
+            draw_y = y
+        picture = slide.shapes.add_picture(
+            str(image_path),
+            Inches(draw_x),
+            Inches(draw_y),
+            width=Inches(draw_w),
+            height=Inches(draw_h),
+        )
     if "rotation" in spec:
         picture.rotation = float(spec["rotation"])
 
