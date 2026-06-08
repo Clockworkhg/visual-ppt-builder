@@ -51,10 +51,10 @@ visual-planning, image-generation, editability, and validation rules.
 2. Build a brief from the user request. Infer missing non-critical details.
    Ask only when purpose, language, page count, source facts, or required assets
    are impossible to infer safely.
-3. Run the decision gates. Ask the user before choices that materially affect
-   style, scope, editability, source accuracy, cost/time, or whether to proceed
-   after visual drafts. Offer 2-3 clear options with a recommended default plus
-   a custom-answer path.
+3. Run the decision gates. CHECKPOINT: ask the user before choices that
+   materially affect style, scope, editability, source accuracy, cost/time, or
+   whether to proceed after visual drafts. Offer 2-3 clear options with a
+   recommended default plus a custom-answer path.
 4. Create `slide_plan.json` before generating visuals or slides. Include deck
    metadata, a visual system, and one object per slide.
 5. Before calling the image model, create a visual prompt strategy. If the
@@ -72,9 +72,9 @@ visual-planning, image-generation, editability, and validation rules.
 8. Validate visual draft dimensions before extraction. Each draft must be 16:9
    within a small tolerance. If drafts came from a generated contact sheet,
    reject them and regenerate individual slide drafts.
-9. Before extraction, ask the user whether the visual drafts are acceptable when
-   visual fidelity matters. If the user rejects the direction, revise drafts
-   before splitting assets.
+9. CHECKPOINT: before extraction, ask the user whether the visual drafts are
+   acceptable when visual fidelity matters. If the user rejects the direction,
+   revise drafts before splitting assets.
 10. Extract or regenerate the useful visual pieces as separate transparent PNGs:
    product cutouts, decorative leaves, platforms, icon-like assets, soft
    shadows, and reusable image fragments. Skip plain rectangles, circles,
@@ -87,8 +87,23 @@ visual-planning, image-generation, editability, and validation rules.
    then editable text boxes. Keep all title, body, label, table, and parameter
    text editable.
 13. Validate the deck. Prefer rendered preview QA when available. Always inspect
-   the PPTX package for slide count and text objects.
+   the PPTX package for slide count and text objects. STOP if validation shows
+   missing slides, missing editable text, wrong draft ratios, or unusable image
+   assets; repair and revalidate before delivery.
 14. Deliver the final PPTX plus useful support artifacts.
+
+## Checkpoints
+
+- CHECKPOINT: before choosing `visual_only`, confirm that the user accepts
+  image-only pages and reduced editability.
+- CHECKPOINT: before image generation, confirm unresolved high-impact style,
+  audience, page count, factual-source, or required-asset choices.
+- CHECKPOINT: after visual drafts and before asset extraction, get approval for
+  the direction when visual fidelity matters.
+- STOP: do not extract assets from contact sheets, wrong-ratio drafts, or
+  drafts the user rejected.
+- STOP: do not deliver a deck that fails slide count, editable-text, image
+  object, text overflow, or package validation checks.
 
 ## Mode Router
 
